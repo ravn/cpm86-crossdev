@@ -1,11 +1,15 @@
-#!/bin/bash
+#!/bin/sh
+
+set -e
+
 echo INF: Checking NASM ...
 cd "$root"
 if [ ! -d nasm ];then
-    fetch_get "https://www.nasm.us/pub/nasm/releasebuilds/3.01/nasm-3.01.tar.gz"
+    fetch_get "https://www.nasm.us/pub/nasm/releasebuilds/3.02/nasm-3.02.tar.gz"
     tar zxf "$ARCHIVED_FILE"
-    mv nasm-3.01 nasm
+    mv nasm-3.02 nasm
 fi
 if [ ! -f bin/nasm ];then
-    (cd nasm;./configure;make -j4;cp nasm ../bin)
+    ncpus="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || getconf NPROCESSORS_ONLN 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || printf '%s\n' 1)"
+    (cd nasm;./configure;make -j"$ncpus";cp nasm ../bin)
 fi
